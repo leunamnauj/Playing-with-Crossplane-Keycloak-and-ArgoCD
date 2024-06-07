@@ -1,0 +1,12 @@
+apiVersion: realm.keycloak.crossplane.io/v1alpha1
+kind: Realm
+metadata:
+  name: {{ .Values.mykc.realmId }}
+  labels:
+    kc_realm: {{ .Release.Name }}
+spec:
+  forProvider:
+    realm: {{ .Values.mykc.realmId }}
+  deletionPolicy: "Delete"
+  providerConfigRef:
+    name: "{{ .Release.Name }}-keycloak-config"

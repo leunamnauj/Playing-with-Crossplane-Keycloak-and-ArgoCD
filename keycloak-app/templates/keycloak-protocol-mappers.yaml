@@ -1,0 +1,20 @@
+---
+apiVersion: client.keycloak.crossplane.io/v1alpha1
+kind: ProtocolMapper
+metadata:
+  name: "{{ index .Values "oauth2-proxy" "config" "clientID" }}-audience-mapper"
+spec:
+  forProvider:
+    name: "{{ index .Values "oauth2-proxy" "config" "clientID" }}-audience-mapper"
+    clientIdRef:
+      name: {{ index .Values "oauth2-proxy" "config" "clientID" }}
+    realmId: {{ .Values.mykc.realmId }}
+    protocol: openid-connect
+    protocolMapper: oidc-audience-mapper
+    config: 
+      "included.client.audience": "{{ index .Values "oauth2-proxy" "config" "clientID" }}"
+      "id.token.claim": "true"
+      "id.token.claim": "true"
+      "access.token.claim": "true"
+  providerConfigRef:
+    name: "{{ .Release.Name }}-keycloak-config"

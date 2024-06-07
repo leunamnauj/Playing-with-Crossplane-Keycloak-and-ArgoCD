@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "{{ .Release.Name }}-keycloak-client-{{ index .Values "oauth2-proxy" "config" "clientID" }}-password"
+type: Opaque
+stringData:
+  {{ index .Values "oauth2-proxy" "config" "clientID" }}: {{ index .Values "oauth2-proxy" "config" "clientSecret" }}
+
+---
+apiVersion: openidclient.keycloak.crossplane.io/v1alpha1
+kind: Client
+metadata:
+  name: {{ index .Values "oauth2-proxy" "config" "clientID" }}
+spec:
+  deletionPolicy: Delete
+  forProvider:
+    accessType: CONFIDENTIAL ## https://registry.terraform.io/providers/mrparkers/keycloak/latest/docs/resources/openid_client#access_type 
+    clientId: {{ index .Values "oauth2-proxy" "config" "clientID" }}
+    name: {{ index .Values "oauth2-proxy" "config" "clientID"  }}
+    realmId: {{ .Values.mykc.realmId }}
+    directAccessGrantsEnabled: false
+    standardFlowEnabled: true
+    validRedirectUris:
+      - "http://oauth2-proxy/oauth2/callback"
+    clientSecretSecretRef:
+      key: {{ index .Values "oauth2-proxy" "config" "clientID"  }}
+      name: "{{ .Release.Name }}-keycloak-client-{{ index .Values "oauth2-proxy" "config" "clientID" }}-password"
+      namespace: {{ .Release.Namespace }}
+  deletionPolicy: "Delete"
+  providerConfigRef:
+    name: "{{ .Release.Name }}-keycloak-config"

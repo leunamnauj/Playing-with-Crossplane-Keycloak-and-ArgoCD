@@ -1,0 +1,19 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: keycloak-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/leunamnauj/Playing-with-Crossplane-Keycloak-and-ArgoCD.git
+    targetRevision: HEAD
+    path: keycloak-app
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: keycloak-app
+  syncPolicy:
+    automated: {}
+    syncOptions:
+    - CreateNamespace=true
